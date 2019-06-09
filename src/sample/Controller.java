@@ -39,7 +39,7 @@ public class Controller {
         createUpdate(eventID,userID,desc);
 
     }
-    private void createUpdate(int eventID, int userID, String desc) {
+    public void createUpdate(int eventID, int userID, String desc) {
         Event event=events.get(eventID);
         User user=users.get(userID);
         Update update=event.createUpdate(user,desc);
@@ -123,7 +123,6 @@ public class Controller {
 
 
 
-
     //region User
     public User search_username(String Username){ return query.search_username(Username); }
 
@@ -133,23 +132,11 @@ public class Controller {
 
     public String getOrganizationName(int orgId) { return query.getOrganizationName(orgId);}
 
-    //public int AddNotification(Notification n) { return query.insert(n);}
-
     //public ObservableList<Notification> getNotificationByUserName() { return query.getNotificationByUserName();}
 
-    public ObservableList<Organization> getAllOrganizations(){return query.getAllOrganizations();}
-
-    //public ArrayList<Notification> getNotificationByEventID(int eventID){return query.getNotificationByEventID(eventID);}
+    public ObservableList<Update> getUpdateByEventID(int eventID){return query.getObserverUpdatesByEventID(eventID);}
 
     public List<User> getUsersDB() {return query.getallUsers() ;}
 
-    public int insertUpdate(Update update) {return query.inserUpdate(update); }
-
-    /*
-    public void test(int i, ObservableList selectedItems) throws SQLException {
-        query.insertUsersWithPermissions(i, selectedItems);
-    }
-
-     */
 }
 

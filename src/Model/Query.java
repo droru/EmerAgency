@@ -180,6 +180,10 @@ public class Query
         }
         return null;
     }
+    public ObservableList<Update> getObserverUpdatesByEventID(int eventID){
+        List<Update> updates = getUpdatesByEventID(eventID);
+        return FXCollections.observableArrayList(updates);
+    }
 
     public ObservableList<Category> getAllCategories()
     {
@@ -312,37 +316,6 @@ public class Query
         }
         return null;
     }
-/*
-    public int insertEvent(Event event, ObservableList<Category> addedCategories, ObservableList<Organization> addedOrganozations, Model.Update initUpdate){
-        String sql = "INSERT INTO Event (Publisher, Title, publishDateTime ,Status ) VALUES(?,?,?,?)";
-        try (
-                Connection conn = connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql))
-        {
-            pstmt.setInt(1, event.getPublisher());
-            pstmt.setString(2,event.getTitle());
-            pstmt.setDate(3, (Date) event.getPublishDateTime());
-            pstmt.setString(4, event.getStatus());
-
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                int newId = rs.getInt(1);
-                event.setEventID(newId);
-                insertCategories(newId, addedCategories);
-                insertOrganization(newId, addedOrganozations);
-                initUpdate.setEvnentID(newId);
-                //insert(initUpdate);
-               // insertUsersWithPermissions(newId, addedOrganozations);
-            }
-            return 0 ;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 1 ;
-        }
-    }
-
- */
 
     public int insertEvent(Event event){
         String sql = "INSERT INTO Event (Publisher, Title, publishDateTime  ) VALUES(?,?,?)";
@@ -458,25 +431,4 @@ public class Query
             return 1;
         }
     }
-   /*
-    public void insertUsersWithPermissions(int eID, ObservableList<Organization> list) throws SQLException {
-        for(Organization o:list){
-            Connection conn = connect();
-            ResultSet rs = getAllUsersInOrganization(conn, o.getId());
-            while (rs.next()) {
-                String sql = "INSERT INTO UserEvent(UserId, EventId, Permission) VALUES(?,?,?)";
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setInt(1, rs.getInt("UserId"));
-                pstmt.setInt(2, eID);
-                pstmt.setString(3, "R");
-                pstmt.executeUpdate();
-            }
-            String sql = "INSERT INTO UserEvent(UserId, EventId, Permission) VALUES('1', "+eID+", 'R')";
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.executeUpdate();
-
-        }
-    }
-
-    */
 }

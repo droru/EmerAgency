@@ -31,7 +31,7 @@ public class AddEventController extends Aview {
     List<Category> selectedCategories= new ArrayList<>();
     List<Organization> selectedOrganizations= new ArrayList<>();
     public void initialize() {
-        organizations = getController().getAllOrganizations();
+        organizations = FXCollections.observableArrayList(getController().getOrganizations().values());
         categories = FXCollections.observableArrayList(getController().getCategories().values());
         list_organizations.setItems(organizations);
         list_organizations.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

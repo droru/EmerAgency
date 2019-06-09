@@ -103,7 +103,7 @@ public class MainScreenController extends Aview
                             }
                             btn.setOnAction(event -> {
                                 Main.EventId = getTableView().getItems().get(getIndex()).getEventID();
-                                Main.switchScene("../View/AddNotification.fxml", Main.getStage(), 600, 400);
+                                Main.switchScene("../View/AddUpdate.fxml", Main.getStage(), 600, 400);
                             });
                             setGraphic(btn);
                             setText(null);
@@ -132,7 +132,7 @@ public class MainScreenController extends Aview
                         } else {
                             btn.setOnAction(event -> {
                                 Main.EventId = getTableView().getItems().get(getIndex()).getEventID();
-                                Main.switchScene("../View/WatchNotification.fxml", Main.getStage(), 600, 400);
+                                Main.switchScene("../View/WatchUpdate.fxml", Main.getStage(), 600, 400);
                             });
                             setGraphic(btn);
                             setText(null);

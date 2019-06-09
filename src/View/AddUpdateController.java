@@ -1,9 +1,10 @@
 package View;
 
-import Model.Notification;
 import Model.Update;
 import javafx.event.ActionEvent;
+import javafx.geometry.NodeOrientation;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import sample.Aview;
 import sample.Main;
 
@@ -36,18 +37,23 @@ public class AddUpdateController extends Aview {
             err.setText("*נא להכניס שדות חוקיים");
         else
         {
-            int i= getController().insertUpdate(new Update (Integer.valueOf(UserId.getText()),Integer.valueOf(EventId.getText()),body.getText()));
-            if(i==1)
-            {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,"The Notification is Add!");  //new alert object
-                alert.setResizable(false);
-                Optional<ButtonType> result = alert.showAndWait();
+            try {
+                getController().createUpdate(Integer.valueOf(EventId.getText()), Integer.valueOf(UserId.getText()), body.getText());
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("הוספת עדכון לאירוע");
+                alert.getDialogPane().setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+                alert.setContentText("ההוספה בוצעה בהצלחה");
+                alert.showAndWait();
+                alert.close();
                 Main.switchScene("../View/MainScreen.fxml", Main.getStage(), 620, 400);
-
-
-
-
-
+            }
+            catch (Exception e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("הוספת עדכון לאירוע");
+                alert.getDialogPane().setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+                alert.setContentText("ארעה שגיאה בעת הוספת העדכון.");
+                alert.showAndWait();
+                alert.close();
             }
         }
 
