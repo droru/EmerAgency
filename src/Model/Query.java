@@ -11,9 +11,9 @@ import java.util.List;
 
 public class Query
 {
-    private static Connection connect() {
-        // SQLite connection string
-        //DriverManager.getConnection("jdbc:sqlite:D:\\db\\my-db.sqlite");
+    private static Connection connect() throws SQLException {
+        //SQLite connection string
+        //DriverManager.getConnection("jdbc:sqlite:D:\\db\\Emer-Agency-DB.sqlite");
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
