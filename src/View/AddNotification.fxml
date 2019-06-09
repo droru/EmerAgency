@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.AddUpdateController">
+   <children>
+      <Label layoutX="194.0" layoutY="36.0" prefHeight="43.0" prefWidth="203.0" text="Notification:" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="33.0" />
+         </font></Label>
+      <Label layoutX="14.0" layoutY="101.0" prefHeight="24.0" prefWidth="55.0" text="UserID:">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="180.0" layoutY="104.0" prefHeight="17.0" prefWidth="69.0" text="EventId:">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="336.0" layoutY="107.0" text="Time:">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="462.0" layoutY="107.0" text="Date:">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <TextField fx:id="UserId" disable="true" layoutX="82.0" layoutY="103.0" prefHeight="25.0" prefWidth="79.0" />
+      <TextField fx:id="EventId" disable="true" layoutX="230.0" layoutY="103.0" prefHeight="17.0" prefWidth="79.0" />
+      <TextField fx:id="Time" disable="true" layoutX="373.0" layoutY="103.0" prefHeight="25.0" prefWidth="79.0" />
+      <Label layoutX="62.0" layoutY="156.0" prefHeight="17.0" prefWidth="40.0" text="Body:">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="body" layoutX="113.0" layoutY="173.0" prefHeight="137.0" prefWidth="421.0" />
+      <Button layoutX="319.0" layoutY="350.0" mnemonicParsing="false" onAction="#send" prefHeight="25.0" prefWidth="108.0" text="Send" />
+      <Label fx:id="err" layoutX="202.0" layoutY="326.0" prefHeight="24.0" prefWidth="214.0" textFill="#e80909">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font></Label>
+      <TextField fx:id="date" layoutX="512.0" layoutY="103.0" prefHeight="25.0" prefWidth="79.0" />
+      <Button onAction="#Back" layoutX="166.0" layoutY="350.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Back" />
+   </children>
+</AnchorPane>
