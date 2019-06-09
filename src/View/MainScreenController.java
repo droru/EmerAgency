@@ -55,7 +55,7 @@ public class MainScreenController extends Aview
         }
 
         if (EventTable.getColumns().size() == 0) {
-            ObservableList<Event> events = getController().getEventsByUserName(String.valueOf(Main.loggedUser.getUserId()));
+            ObservableList<Event> events = getController().getEventsByUserId(Main.loggedUser.getUserId());
             setTableData(events);
         }
     }
@@ -68,10 +68,9 @@ public class MainScreenController extends Aview
         TableColumn actionCol2 = new TableColumn("עידכונים");
         TableColumn actionCol3=new TableColumn("דוח");
         TableColumn<Event, Integer> eventIDCol = new TableColumn<Event, Integer>("מספר מזהה אירוע");
-        TableColumn<Event, Integer> eventManageCol = new TableColumn<Event, Integer>("מנהל אירוע");
         TableColumn<Event, Integer> eventPublishCol = new TableColumn<Event, Integer>("מפרסם אירוע");
         TableColumn<Event, String> eventTitleCol = new TableColumn<Event, String>("כותרת אירוע");
-        TableColumn<Event, String> eventPublishTimeCol = new TableColumn<Event, String>("תאריך פירסום");
+       // TableColumn<Event, String> eventPublishTimeCol = new TableColumn<Event, String>("תאריך פירסום");
         TableColumn<Event, String> eventStatusCol = new TableColumn<Event, String>("סטאטוס אירוע");
 
         actionCol1.setCellFactory(new PropertyValueFactory<>("DUMMY"));
@@ -180,13 +179,12 @@ public class MainScreenController extends Aview
         actionCol2.setCellFactory(cellFactory1);
         actionCol3.setCellFactory(cellFactory2);
         eventIDCol.setCellValueFactory(new PropertyValueFactory<>("EventID"));
-        eventManageCol.setCellValueFactory(new PropertyValueFactory<>("manage"));
-        eventPublishCol.setCellValueFactory(new PropertyValueFactory<>("publish"));
+        eventPublishCol.setCellValueFactory(new PropertyValueFactory<>("publisher"));
         eventTitleCol.setCellValueFactory(new PropertyValueFactory<>("Title"));
-        eventPublishTimeCol.setCellValueFactory(new PropertyValueFactory<>("publish_time"));
+       // eventPublishTimeCol.setCellValueFactory(new PropertyValueFactory<>("publish_time"));
         eventStatusCol.setCellValueFactory(new PropertyValueFactory<>("Status"));
         EventTable.setItems(events);
-        EventTable.getColumns().addAll(eventIDCol,eventTitleCol,eventManageCol,eventPublishTimeCol,eventPublishCol,actionCol2,actionCol1,actionCol3,eventStatusCol );
+        EventTable.getColumns().addAll(eventIDCol,eventTitleCol,eventPublishCol,actionCol2,actionCol1,actionCol3,eventStatusCol );
 
     }
 

@@ -15,7 +15,7 @@ public class Controller {
 
     public Event getEventbyID(int id){return  query.getEventbyID(id);}
 
-    public ObservableList<Event> getEventsByUserName(String userName) { return query.getEventsByUserName(userName);}
+    public ObservableList<Event> getEventsByUserId(int ID) { return query.getEventsByUserName(ID);}
 
     public String getOrganizationName(int orgId) { return query.getOrganizationName(orgId);}
 

@@ -76,9 +76,9 @@ public class Query
         }
     }
 
-    public ObservableList<Event> getEventsByUserName(String userName)
+    public ObservableList<Event> getEventsByUserName(int userID)
     {
-        String sql = "SELECT * FROM Event  INNER JOIN UserEvent ON UserEvent.EventId=Event.EventId AND UserEvent.UserId="+userName+" group BY Event.EventId;";
+        String sql = "SELECT * FROM Event  INNER JOIN UserEvent ON UserEvent.EventId=Event.EventId AND UserEvent.UserId="+userID+" group BY Event.EventId;";
 
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
