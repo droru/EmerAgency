@@ -1,23 +1,24 @@
 package Model;
 
+import java.util.Date;
+
 public class Notification
 {
     public int NotificationID;
     public String title;
     public String PublishTime;
-    public String Status;
 
 
-    public Notification(int notificationID, String title, String publishTime, String status) {
+    public Notification(int notificationID, String title, String publishTime) {
         NotificationID = notificationID;
         this.title = title;
         PublishTime = publishTime;
-        Status = status;
     }
 
-    public Notification(String title, String status) {
+    public Notification(String title) {
         this.title = title;
-        Status = status;
+        this.PublishTime=new Date().toString();
+
     }
 
     public int getNotificationID() {
@@ -44,22 +45,5 @@ public class Notification
         PublishTime = publishTime;
     }
 
-    public String getStatus() {
-        return Status;
-    }
-
-    public void setStatus(String status) {
-        Status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "NotificationID=" + NotificationID +
-                ", title='" + title + '\'' +
-                ", PublishTime='" + PublishTime + '\'' +
-                ", Status='" + Status + '\'' +
-                '}';
-    }
 }
 

@@ -1,7 +1,14 @@
 package Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User
 {
+
+    List <Notification> notifications;
+    List <Permission> permissions;
+
     private int UserId;
     private String UserName;
     private int OrganizationId;
@@ -10,7 +17,8 @@ public class User
     private String Email;
     private String Status;
 
-    public User(int userId, String userName, int organizationId, String password, int rank, String email, String status) {
+
+    public User(int userId, String userName, int organizationId, String password, int rank, String email, String status,List<Notification>notifications,List<Permission> permissions) {
         UserId = userId;
         UserName = userName;
         OrganizationId = organizationId;
@@ -18,6 +26,9 @@ public class User
         Rank = rank;
         Email = email;
         Status = status;
+        this.notifications=new ArrayList<>();
+        this.notifications=notifications;
+        this.permissions = permissions;
     }
 
     public int getUserId() {
@@ -74,5 +85,12 @@ public class User
 
     public void setStatus(String status) {
         Status = status;
+    }
+
+    public void sendNotification(Notification n) {
+        notifications.add(n);
+    }
+    public void addPremission(Permission p){
+        permissions.add(p);
     }
 }

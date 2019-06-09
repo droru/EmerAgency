@@ -30,7 +30,7 @@ public class reportController extends Aview {
     public void initialize() {
         event = getController().getEventbyID(eventID);
         //notifications = getController().getNotificationByEventID(eventID);
-        users = getController().getUsers();
+        //users = getController().getUsers();
         setReportDetails();
         editNotificationtoReport();
         //notificationList.setItems(notifications);

@@ -1,13 +1,10 @@
 package Model;
-import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import sample.Main;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Query
 {
@@ -34,13 +31,14 @@ public class Query
 
     public User search_username(String st) {
         String sql = "SELECT * "
-                + "FROM USERS WHERE UserName =  '" +st + "'" ;
+                + "FROM Users WHERE UserName =  '" +st + "'" ;
 
         try (Connection conn = connect();
              PreparedStatement pstmt  = conn.prepareStatement(sql)){
             ResultSet rs  = pstmt.executeQuery();
             if (rs.next()) {
-                return new User(rs.getInt("UserId"),rs.getString("UserName"),rs.getInt("OrganizationId"),rs.getString("Password"),rs.getInt("Rank"),rs.getString("Email"),rs.getString("Status")) ;
+                return new User(rs.getInt("UserId"),rs.getString("UserName"),rs.getInt("OrganizationId"),rs.getString("Password"),rs.getInt("Rank"),rs.getString("Email"),rs.getString("Status"), getNotificationUserID(rs.getInt("UserId")),getPermissionByuserID(rs.getInt("UserId")));
+
             }
 
             else {
@@ -53,6 +51,23 @@ public class Query
         }
     }
 
+    private List<Permission> getPermissionByuserID(int userId) {
+        String sql = "SELECT * FROM UserEvent  where UserId="+userId;
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            ResultSet rs = psmt.executeQuery();
+            List<Permission> permissions = new ArrayList<>();
+            while (rs.next()) {
+                Permission p = new Permission(rs.getInt("UserId"), rs.getInt("EventId"), rs.getString("Permission"),rs.getInt("isManger"));
+                permissions.add(p);
+            }
+            return permissions;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 
 
     public Event getEventbyID(int id) {
@@ -63,7 +78,7 @@ public class Query
              PreparedStatement pstmt  = conn.prepareStatement(sql)){
             ResultSet rs  = pstmt.executeQuery();
             if (rs.next()) {
-                return new Event(rs.getInt("EventID"),rs.getInt("Publisher"),rs.getString("title"),rs.getDate("publishDateTime"),rs.getString("Status"));
+                return new Event(rs.getInt("EventID"),rs.getInt("Publisher"),rs.getString("title"),rs.getDate("publishDateTime"),rs.getString("Status"), getUpdatesByEventID(rs.getInt("EventID")), getCategoriesByEventID(rs.getInt("EventID")), getOrganizationByEventID(rs.getInt("EventID")));
             }
 
             else {
@@ -78,7 +93,7 @@ public class Query
 
     public ObservableList<Event> getEventsByUserName(int userID)
     {
-        String sql = "SELECT * FROM Event  INNER JOIN UserEvent ON UserEvent.EventId=Event.EventId AND UserEvent.UserId="+userID+" group BY Event.EventId;";
+        String sql = "SELECT * FROM Event INNER JOIN UserEvent ON UserEvent.EventId=Event.EventId AND UserEvent.UserId="+userID+" group BY Event.EventId;";
 
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
@@ -99,12 +114,69 @@ public class Query
 
 
             //System.out.println(d.toString());
-            Event e= new Event(rs.getInt("EventID"),rs.getInt("Publisher"),rs.getString("title"),rs.getDate("publishDateTime"),rs.getString("Status"));
+            Event e= new Event(rs.getInt("EventID"),rs.getInt("Publisher"),rs.getString("title"),rs.getDate("publishDateTime"),rs.getString("Status"), getUpdatesByEventID(rs.getInt("EventID")), getCategoriesByEventID(rs.getInt("EventID")), getOrganizationByEventID(rs.getInt("EventID")));
             events.add(e);
         }
         if(events != null) {
             ObservableList<Event> observableEvents = FXCollections.observableArrayList(events);
             return observableEvents;
+        }
+        return null;
+    }
+
+    private List<Organization> getOrganizationByEventID(int eventID) {
+        String sql = "SELECT * FROM Organization inner join EventOrganization where EventId="+eventID;
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            ResultSet rs = psmt.executeQuery();
+
+            List<Organization> organizations = new ArrayList<>();
+            while (rs.next()) {
+                Organization org = new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), getUserByOrganizationID(rs.getInt("OrganizationID")));
+                organizations.add(org);
+            }
+            return organizations;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    private List<Category> getCategoriesByEventID(int eventID) {
+        String sql = "SELECT * FROM Category inner join EventCategory where EventID="+eventID;
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            ResultSet rs = psmt.executeQuery();
+
+            List<Category> categories = new ArrayList<>();
+            while (rs.next()) {
+                Category category = new Category(rs.getInt("CategoryID"), rs.getString("NameCategory"));
+                categories.add(category);
+            }
+            return categories;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    private List<Update> getUpdatesByEventID(int eventID) {
+        String sql = "SELECT * FROM  EventUpdates where EventId="+eventID;
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            ResultSet rs = psmt.executeQuery();
+
+            List<Update> updates = new ArrayList<>();
+            while (rs.next()) {
+                Update u = new Update(rs.getInt("updateID"),rs.getInt("UserId"),rs.getInt("EventId"),rs.getString("description"),rs.getDate("publishDateTime"));
+                updates.add(u);
+            }
+            return updates;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -155,7 +227,8 @@ public class Query
 
             List<Organization> orgs = new ArrayList<>();
             while (rs.next()) {
-                orgs.add(new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName")));
+                List<User> users = getUserByOrganizationID(rs.getInt("OrganizationID"));
+                orgs.add(new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), users));
             }
             ObservableList<Organization> observablOrgs = FXCollections.observableArrayList(orgs);
             return observablOrgs;
@@ -166,35 +239,32 @@ public class Query
         return null;
     }
 
-    /*
-    public int insert(Model.Notification noti)
-    {
-            String sql = "INSERT INTO Notification (NotificationID, UserId, EventId , Title, PublishTime ,PublishDate ,Status ) VALUES(?,?,?,?,?,?,?)";
-            try (
-                    Connection conn = connect();
-                    PreparedStatement pstmt = conn.prepareStatement(sql))
-            {
-                pstmt.setInt(1,noti.getNotificationID());
-                pstmt.setInt(2, noti.getUserId());
-                pstmt.setInt(3,noti.getEventId());
-                pstmt.setString(4,noti.getTitle() );
-                pstmt.setString(5, noti.getPublishTime());
-                pstmt.setString(6,noti.getPublishDate());
-                pstmt.setString(7,noti.getStatus());
+    private List<User> getUserByOrganizationID(int organizationID) {
+        String sql = "SELECT * FROM Users where OrganizationId="+organizationID;
+        System.out.println(sql);
 
-                return pstmt.executeUpdate();
-                //return 0 ;
-            } catch (SQLException e) {
-                return 1 ;
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            ResultSet rs = psmt.executeQuery();
+
+            List<User> users = new ArrayList<>();
+            while (rs.next()) {
+                User u =new User(rs.getInt("UserId"),rs.getString("UserName"),rs.getInt("OrganizationId"),rs.getString("Password"),rs.getInt("Rank"),rs.getString("Email"),rs.getString("Status"), getNotificationUserID(rs.getInt("UserId")),getPermissionByuserID(rs.getInt("UserId")));
+
+                users.add(u);
             }
+            return users;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
-     */
 
-    /*
-    public ObservableList<Model.Notification> getNotificationByUserName()
+    private ObservableList<Model.Notification> getNotificationUserID(int userID)
     {
-        String sql = "SELECT * FROM Notification  where EventId="+ Main.EventId;
+        String sql = "SELECT * FROM Notification inner join UserNotification where userID="+userID;
         System.out.println(sql);
 
         try(Connection conn = connect();
@@ -209,13 +279,10 @@ public class Query
         return null;
     }
 
-     */
-    /*
-
     private ObservableList<Model.Notification> notificationResultSetToObservable(ResultSet rs) throws SQLException {
         List< Model.Notification> notifications = new ArrayList<>();
         while (rs.next()) {
-            Model.Notification e = new  Model.Notification(rs.getInt("NotificationID"),rs.getInt("UserId"), rs.getInt("EventId"), rs.getString("Title"), rs.getString("PublishTime"), rs.getString("PublishDate"), rs.getString("Status"));
+            Model.Notification e = new  Model.Notification(rs.getInt("NotificationID"), rs.getString("Title"), rs.getString("PublishTime"));
             notifications.add(e);
         }
         if(notifications != null) {
@@ -225,8 +292,6 @@ public class Query
         return null;
     }
 
-
-     */
     public List<User> getallUsers() {
         String sql = "SELECT * FROM Users";
         System.out.println(sql);
@@ -235,7 +300,9 @@ public class Query
             PreparedStatement psmt = conn.prepareStatement(sql);){
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
-                Model.User user = new  Model.User(rs.getInt("UserId"),rs.getString("UserName"), rs.getInt("OrganizationId"), rs.getString("Password"), rs.getInt("Rank"), rs.getString("Email"), rs.getString("Status"));
+                List<Notification> not=getNotificationUserID(rs.getInt("UserId"));
+                Model.User user = new User(rs.getInt("UserId"),rs.getString("UserName"),rs.getInt("OrganizationId"),rs.getString("Password"),rs.getInt("Rank"),rs.getString("Email"),rs.getString("Status"), getNotificationUserID(rs.getInt("UserId")),getPermissionByuserID(rs.getInt("UserId")));
+
                 users.add(user);
             }
             return users;
@@ -245,7 +312,7 @@ public class Query
         }
         return null;
     }
-
+/*
     public int insertEvent(Event event, ObservableList<Category> addedCategories, ObservableList<Organization> addedOrganozations, Model.Update initUpdate){
         String sql = "INSERT INTO Event (Publisher, Title, publishDateTime ,Status ) VALUES(?,?,?,?)";
         try (
@@ -275,26 +342,41 @@ public class Query
         }
     }
 
-    public void insertCategories(int eID, ObservableList<Category> list) throws SQLException {
-        for (Category c:list) {
-            String sql = "INSERT INTO EventCategory(EventID, CategoryId) VALUES (?,?)";
-            Connection conn = connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, eID);
-            pstmt.setInt(2, c.id);
+ */
+
+    public int insertEvent(Event event){
+        String sql = "INSERT INTO Event (Publisher, Title, publishDateTime  ) VALUES(?,?,?)";
+        try (
+                Connection conn = connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql))
+        {
+            pstmt.setInt(1, event.getPublisher());
+            pstmt.setString(2,event.getTitle());
+            pstmt.setDate(3, event.getPublishDateTime());
+            //pstmt.setString(4, event.getStatus());
             pstmt.executeUpdate();
+            ResultSet rs=pstmt.getGeneratedKeys();
+           return rs.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1 ;
         }
     }
-    public void insertOrganization(int eID, ObservableList<Organization> list) throws SQLException {
-        for(Organization o:list){
-            String sql = "INSERT INTO EventOrganization(EventId, OrganizationID) VAlUES(?,?)";
-            Connection conn = connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, eID);
-            pstmt.setInt(2, o.getId());
+    public int insertCategoryForEvent(int eventID, Category c){
+        String sql = "INSERT INTO EventCategory(EventID, CategoryId) VALUES (?,?)";
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setInt(1, eventID);
+            pstmt.setInt(2, c.getId());
             pstmt.executeUpdate();
+            return 0;
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return 1;
         }
     }
+
 
     public int inserUpdate(Update update) {
         String sql = "INSERT INTO EventUpdates (userid, eventid, description, publishdatetime) VALUES(?,?,?,?)";
@@ -304,13 +386,76 @@ public class Query
         {
             pstmt.setInt(1, update.getUserID());
             pstmt.setInt(2,update.getEvnentID());
-            pstmt.setDate(4, (Date) update.getPublishDate());
+            pstmt.setDate(4, update.getPublishDate());
             pstmt.setString(3, update.getDesc());
             pstmt.executeUpdate();
             return 0 ;
         } catch (SQLException e) {
             e.printStackTrace();
             return 1 ;
+        }
+    }
+
+    public int insertOrganizationForEvent(int eventID, Organization o) {
+        String sql = "INSERT INTO EventOrganization(EventId, OrganizationID) VAlUES(?,?)";
+        try(Connection conn = connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setInt(1, eventID);
+            pstmt.setInt(2, o.getId());
+            pstmt.executeUpdate();
+            return 0;
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return 1;
+        }
+    }
+
+    public int insertNotificationToUser(int notID, User u) {
+        String sql = "INSERT INTO UserNotification(notificationID, userID) VAlUES(?,?)";
+        try(Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setInt(1, notID);
+            pstmt.setInt(2, u.getUserId());
+            pstmt.executeUpdate();
+            return 0;
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return 1;
+        }
+    }
+
+    public int insertNotification(Notification n) {
+        String sql = "INSERT INTO Notification(Title, PublishTime) VAlUES(?,?)";
+        try(Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setString(1, n.getTitle());
+            pstmt.setString(2, n.getPublishTime());
+            pstmt.executeUpdate();
+            ResultSet rs=pstmt.getGeneratedKeys();
+            return rs.getInt(1);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return 1;
+        }
+    }
+
+    public int insertPremission(Permission p) {
+        String sql = "INSERT INTO UserEvent(UserId,EventId,Permission,isManger) VAlUES(?,?,?,?)";
+        try(Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setInt(1, p.getUserID());
+            pstmt.setInt(2, p.getEventID());
+            pstmt.setString(3, p.getPremission());
+            pstmt.setInt(4, p.getIsManger());
+            pstmt.executeUpdate();
+            return 0;
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return 1;
         }
     }
    /*

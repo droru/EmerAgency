@@ -1,12 +1,19 @@
 package Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Organization {
+
+    List<User>users;
     private int id;
     private String name;
 
-    public Organization(int id, String name) {
+    public Organization(int id, String name,List<User>users) {
         this.id = id;
         this.name = name;
+        this.users=new ArrayList<>();
+        this.users=users;
     }
 
     public void setId(int id) {
@@ -28,5 +35,9 @@ public class Organization {
     @Override
     public String toString() {
         return name;
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 }

@@ -2,7 +2,7 @@ package Model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Date;
 
 public class Update {
     private  int updateID;
@@ -21,12 +21,13 @@ public class Update {
 
     public Update(int userID, int evnentID, String desc) {
         //DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date = new Date();
+        Date date = new Date(System.currentTimeMillis());
         this.publishDate=date;
         this.userID = userID;
         this.evnentID = evnentID;
         this.desc = desc;
     }
+
 
     public int getUpdateID() {
         return updateID;

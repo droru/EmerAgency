@@ -1,6 +1,7 @@
 package View;
 
 import Model.Event;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,8 @@ import sample.Aview;
 import sample.Main;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainScreenController extends Aview
@@ -28,6 +31,11 @@ public class MainScreenController extends Aview
 
 
     public void initialize() {
+        getController().getUsers();
+        getController().getEvents();
+        getController().getCategories();
+        getController().getOrganizations();
+
         OrganizationName = getController().getOrganizationName(Main.loggedUser.getOrganizationId());
         Title.setText(OrganizationName + " Events");
         switch(OrganizationName) {
@@ -192,12 +200,18 @@ public class MainScreenController extends Aview
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../View/AddEvent.fxml"));
         try {
             Parent root = (Parent)fxmlLoader.load();
-            //AddEventController addEventController = fxmlLoader.getController();
-            //addEventController.loadData();
+            AddEventController addEventController = fxmlLoader.getController();
+            addEventController.setData(this);
             Main.newStage(root, "AddEvent", 400, 600, Title.getScene().getWindow());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public void addEventToTable(Event newEvent) {
+        List<Event> events = new ArrayList<>(EventTable.getItems());
+        events.add(newEvent);
+        ObservableList<Event> observableList = FXCollections.observableList(events);
+        EventTable.setItems(observableList);
+    }
 }
