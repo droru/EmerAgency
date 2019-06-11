@@ -1,16 +1,14 @@
 package View;
 
-import Model.Update;
 import javafx.event.ActionEvent;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+
 import sample.Aview;
 import sample.Main;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Optional;
 
 public class AddUpdateController extends Aview {
     public TextField UserId;

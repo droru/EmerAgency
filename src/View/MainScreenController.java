@@ -12,7 +12,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import sample.Aview;
-import sample.Controller;
 import sample.Main;
 
 import java.io.IOException;
