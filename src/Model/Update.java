@@ -3,6 +3,7 @@ package Model;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.sql.Date;
+import java.util.Map;
 
 public class Update {
     private  int updateID;
@@ -78,5 +79,14 @@ public class Update {
                 ", desc='" + desc + '\'' +
                 ", publishDate=" + publishDate +
                 '}';
+    }
+
+    public String updateForReport(Map<Integer,User> userMap){
+        return "מספר עדכון :"+updateID + "   " +
+                "מפרסם העדכון :" +userMap.get(userID).getUserName()+"\n"+
+                "תיאור העדכון: " +desc +"\n"+
+                "תאריך פירסום: " +publishDate;
+
+
     }
 }

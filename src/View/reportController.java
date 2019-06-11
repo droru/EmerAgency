@@ -1,66 +1,99 @@
 package View;
 
-import Model.Event;
-import Model.Notification;
-import Model.User;
+import Model.*;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.geometry.NodeOrientation;
+import javafx.print.PrinterJob;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.w3c.dom.Document;
 import sample.Aview;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class reportController extends Aview {
     static int eventID;
     Event event;
-    List<User> users;
     ArrayList<Notification> notifications;
     public Label eventName;
     public Label eventID_Label;
-    public Label eventManger_Label;
     public Label eventDate_Label;
     public Label eventTime_Label;
     public Label eventStatus_Label;
     public Label eventPublisher_Label;
+    String updates="";
+    String usersEvent="";
+    public Button saveReport;
+    public Button cancelReport;
 
-    public ListView notificationList;
+
+    public ListView updateList;
+    public ListView userList;
+
 
     public void initialize() {
-        event = getController().getEventbyID(eventID);
-        //notifications = getController().getNotificationByEventID(eventID);
-        //users = getController().getUsers();
-        setReportDetails();
-        editNotificationtoReport();
-        //notificationList.setItems(notifications);
-
-        //eventID_label.setText(String.valueOf(event.getEventID()));
-
-    }
-
-    private ObservableList<String> editNotificationtoReport() {
-        String res;
-        for (Notification n: notifications) {
-
-        }
-        return null;
-    }
-
-    private void setReportDetails() {
-        eventName.setText(event.getTitle());
-        eventID_Label.setText(String.valueOf(event.getEventID()));
-        //eventDate_Label.setText(event.getPublish_time());
-        //eventManger_Label.setText(getUserNamebyID(event.getManage()));
-        //eventPublisher_Label.setText(getUserNamebyID(event.getPublish()));
+        event = getController().getEvents().get(eventID);
+        eventName.setText(String.valueOf(event.getEventID()));
+        eventID_Label.setText((event.getTitle()));
         eventStatus_Label.setText(event.getStatus());
+        eventPublisher_Label.setText(getController().getUsers().get(event.getPublisher()).getUserName());
+        eventDate_Label.setText(event.getPublishDateTime().toString());
+
+        for (Update u : event.getUpdates().values()) {
+            updateList.getItems().add(u.updateForReport(getController().getUsers()));
+            updates=updates+u.updateForReport(getController().getUsers())+"\n";
+        }
+
+        Map<Integer, User> eventUsers = new HashMap<>();
+        eventUsers = getController().getEventUser(eventID);
+
+        for (User u : eventUsers.values()) {
+            userList.getItems().add(u.userForReport(getController().getOrganizations()));
+            usersEvent=usersEvent+u.userForReport(getController().getOrganizations())+"\n";
+        }
+
     }
 
-    private String getUserNamebyID(int id) {
-        for (User u:users) {
-            if(u.getUserId()==id)
-                return u.getUserName();
+    public void cancelReportAct(ActionEvent actionEvent) {
+        ((Stage) cancelReport.getScene().getWindow()).close();
+
+    }
+
+    public void saveReportAct(ActionEvent actionEvent) {
+        PrinterJob job = PrinterJob.createPrinterJob();
+        TextArea textArea = new TextArea();
+        textArea.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+        textArea.setMinHeight(650);
+        String report= "דוח איורע מספר :" +eventID+"\n\n"+
+                        event.printString()+
+                "עדכונים:"+ "\n\n"+updates +
+                "משתתפים:"+"\n\n" +usersEvent;
+        textArea.setText(report);
+        if (job != null) {
+            job.showPrintDialog(((Stage) cancelReport.getScene().getWindow())); // Window must be your main Stage
+            job.printPage(textArea);
+            job.endJob();
         }
-        return null;
+
+        ((Stage) cancelReport.getScene().getWindow()).close();
     }
 }

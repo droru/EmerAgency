@@ -1,19 +1,24 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Organization {
 
-    List<User>users;
+    Map<Integer,Report>reports;
+    Map<Integer,User>users;
     private int id;
     private String name;
 
-    public Organization(int id, String name,List<User>users) {
+    public Organization(int id, String name,Map<Integer,User>users,Map<Integer,Report>reports) {
         this.id = id;
         this.name = name;
-        this.users=new ArrayList<>();
+        this.users=new HashMap<>();
         this.users=users;
+        this.reports=new HashMap<>();
+        this.reports=reports;
     }
 
     public void setId(int id) {
@@ -32,12 +37,14 @@ public class Organization {
         return name;
     }
 
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    public List<User> getUsers() {
+    public Map<Integer,User> getUsers() {
         return users;
     }
+
+    public void addReport(Report report) {
+        reports.put(report.getReportID(),report);
+    }
+
+
 }
+

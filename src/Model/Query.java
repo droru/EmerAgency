@@ -4,7 +4,9 @@ import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Query
 {
@@ -124,16 +126,16 @@ public class Query
         return null;
     }
 
-    private List<Organization> getOrganizationByEventID(int eventID) {
+    private Map<Integer,Organization> getOrganizationByEventID(int eventID) {
         String sql = "SELECT * FROM Organization inner join EventOrganization where EventId="+eventID;
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
             ResultSet rs = psmt.executeQuery();
 
-            List<Organization> organizations = new ArrayList<>();
+            Map<Integer,Organization> organizations = new HashMap<>();
             while (rs.next()) {
-                Organization org = new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), getUserByOrganizationID(rs.getInt("OrganizationID")));
-                organizations.add(org);
+                Organization org = new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), getUserByOrganizationID(rs.getInt("OrganizationID")),getReportbyOrgID(rs.getInt("OrganizationID")));
+                    organizations.put(rs.getInt("OrganizationId"),org);
             }
             return organizations;
         }
@@ -143,16 +145,56 @@ public class Query
         return null;
     }
 
-    private List<Category> getCategoriesByEventID(int eventID) {
+    private Map<Integer, Report> getReportbyOrgID(int organizationID) {
+        String sql = "SELECT * FROM Reports where OrganizationId="+organizationID;
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            ResultSet rs = psmt.executeQuery();
+
+            Map<Integer,Report> reports = new HashMap<>();
+            while (rs.next()) {
+                Report u =new Report(rs.getInt("reportID"),rs.getInt("eventID"),getEventbyID(rs.getInt("eventID")),getOrganizationByReportID(rs.getInt("reportID")));
+
+                reports.put(u.getReportID(),u);
+            }
+            return reports;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    private Map<Integer, Organization> getOrganizationByReportID(int reportID) {
+        String sql = "SELECT * FROM Organization inner join Reports where reportID="+reportID;
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            ResultSet rs = psmt.executeQuery();
+            Map<Integer,Organization>  orgs=null;
+            while (rs.next()) {
+                Organization org = new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), getUserByOrganizationID(rs.getInt("OrganizationID")),getReportbyOrgID(rs.getInt("OrganizationID")));
+                orgs.put(reportID,org);
+                //organizations.put(rs.getInt("OrganizationId"),org);
+            }
+            return orgs;
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+
+    private Map<Integer,Category> getCategoriesByEventID(int eventID) {
         String sql = "SELECT * FROM Category inner join EventCategory where EventID="+eventID;
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
             ResultSet rs = psmt.executeQuery();
 
-            List<Category> categories = new ArrayList<>();
+            Map<Integer,Category> categories = new HashMap<>();
             while (rs.next()) {
                 Category category = new Category(rs.getInt("CategoryID"), rs.getString("NameCategory"));
-                categories.add(category);
+                categories.put(rs.getInt("CategoryID"),category);
             }
             return categories;
         }
@@ -162,16 +204,16 @@ public class Query
         return null;
     }
 
-    private List<Update> getUpdatesByEventID(int eventID) {
+    private Map<Integer,Update> getUpdatesByEventID(int eventID) {
         String sql = "SELECT * FROM  EventUpdates where EventId="+eventID;
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
             ResultSet rs = psmt.executeQuery();
 
-            List<Update> updates = new ArrayList<>();
+            Map<Integer,Update> updates = new HashMap<>();
             while (rs.next()) {
                 Update u = new Update(rs.getInt("updateID"),rs.getInt("UserId"),rs.getInt("EventId"),rs.getString("description"),rs.getDate("publishDateTime"));
-                updates.add(u);
+                updates.put(rs.getInt("updateID"),u);
             }
             return updates;
         }
@@ -220,15 +262,15 @@ public class Query
 
     public ObservableList<Organization> getAllOrganizations()
     {
-        String sql = "SELECT * FROM Organization limit 3";
+        String sql = "SELECT * FROM Organization";
         try (Connection conn = connect();
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
 
             List<Organization> orgs = new ArrayList<>();
             while (rs.next()) {
-                List<User> users = getUserByOrganizationID(rs.getInt("OrganizationID"));
-                orgs.add(new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), users));
+                Map<Integer,User> users = getUserByOrganizationID(rs.getInt("OrganizationID"));
+                orgs.add(new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), users,getReportbyOrgID(rs.getInt("OrganizationId"))));
             }
             ObservableList<Organization> observablOrgs = FXCollections.observableArrayList(orgs);
             return observablOrgs;
@@ -239,19 +281,18 @@ public class Query
         return null;
     }
 
-    private List<User> getUserByOrganizationID(int organizationID) {
+    private Map<Integer,User> getUserByOrganizationID(int organizationID) {
         String sql = "SELECT * FROM Users where OrganizationId="+organizationID;
-        System.out.println(sql);
 
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
             ResultSet rs = psmt.executeQuery();
 
-            List<User> users = new ArrayList<>();
+            Map<Integer,User> users = new HashMap<>();
             while (rs.next()) {
                 User u =new User(rs.getInt("UserId"),rs.getString("UserName"),rs.getInt("OrganizationId"),rs.getString("Password"),rs.getInt("Rank"),rs.getString("Email"),rs.getString("Status"), getNotificationUserID(rs.getInt("UserId")),getPermissionByuserID(rs.getInt("UserId")));
 
-                users.add(u);
+                users.put(u.getUserId(),u);
             }
             return users;
         }
@@ -262,16 +303,15 @@ public class Query
     }
 
 
-    private ObservableList<Model.Notification> getNotificationUserID(int userID)
+    private Map<Integer,Notification> getNotificationUserID(int userID)
     {
         String sql = "SELECT * FROM Notification inner join UserNotification where userID="+userID;
-        System.out.println(sql);
 
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
             ResultSet rs = psmt.executeQuery();
 
-            return notificationResultSetToObservable(rs);
+            return  notificationtoMap(rs);//notificationResultSetToObservable(rs);
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -291,16 +331,26 @@ public class Query
         }
         return null;
     }
+    private Map<Integer,Notification> notificationtoMap(ResultSet rs) throws SQLException {
+        Map<Integer, Notification> notifications = new HashMap<>();
+        while (rs.next()) {
+            Model.Notification e = new  Model.Notification(rs.getInt("NotificationID"), rs.getString("Title"), rs.getString("PublishTime"));
+            notifications.put(e.getNotificationID(),e);
+        }
+        if(notifications != null) {
+            return notifications;
+        }
+        return null;
+    }
 
     public List<User> getallUsers() {
         String sql = "SELECT * FROM Users";
-        System.out.println(sql);
         List< User> users = new ArrayList<>();
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql);){
             ResultSet rs = psmt.executeQuery();
             while (rs.next()) {
-                List<Notification> not=getNotificationUserID(rs.getInt("UserId"));
+                Map<Integer,Notification> not=getNotificationUserID(rs.getInt("UserId"));
                 Model.User user = new User(rs.getInt("UserId"),rs.getString("UserName"),rs.getInt("OrganizationId"),rs.getString("Password"),rs.getInt("Rank"),rs.getString("Email"),rs.getString("Status"), getNotificationUserID(rs.getInt("UserId")),getPermissionByuserID(rs.getInt("UserId")));
 
                 users.add(user);
@@ -312,37 +362,6 @@ public class Query
         }
         return null;
     }
-/*
-    public int insertEvent(Event event, ObservableList<Category> addedCategories, ObservableList<Organization> addedOrganozations, Model.Update initUpdate){
-        String sql = "INSERT INTO Event (Publisher, Title, publishDateTime ,Status ) VALUES(?,?,?,?)";
-        try (
-                Connection conn = connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql))
-        {
-            pstmt.setInt(1, event.getPublisher());
-            pstmt.setString(2,event.getTitle());
-            pstmt.setDate(3, (Date) event.getPublishDateTime());
-            pstmt.setString(4, event.getStatus());
-
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                int newId = rs.getInt(1);
-                event.setEventID(newId);
-                insertCategories(newId, addedCategories);
-                insertOrganization(newId, addedOrganozations);
-                initUpdate.setEvnentID(newId);
-                //insert(initUpdate);
-               // insertUsersWithPermissions(newId, addedOrganozations);
-            }
-            return 0 ;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 1 ;
-        }
-    }
-
- */
 
     public int insertEvent(Event event){
         String sql = "INSERT INTO Event (Publisher, Title, publishDateTime  ) VALUES(?,?,?)";
@@ -458,25 +477,38 @@ public class Query
             return 1;
         }
     }
-   /*
-    public void insertUsersWithPermissions(int eID, ObservableList<Organization> list) throws SQLException {
-        for(Organization o:list){
-            Connection conn = connect();
-            ResultSet rs = getAllUsersInOrganization(conn, o.getId());
-            while (rs.next()) {
-                String sql = "INSERT INTO UserEvent(UserId, EventId, Permission) VALUES(?,?,?)";
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setInt(1, rs.getInt("UserId"));
-                pstmt.setInt(2, eID);
-                pstmt.setString(3, "R");
-                pstmt.executeUpdate();
-            }
-            String sql = "INSERT INTO UserEvent(UserId, EventId, Permission) VALUES('1', "+eID+", 'R')";
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.executeUpdate();
 
+    public int insertReport(Report report,int orgID) {
+        String sql = "INSERT INTO Reports(reportID,eventID, organizationID) VAlUES(?,?,?)";
+        try(Connection conn = connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);) {
+            pstmt.setInt(1,report.getReportID());
+            pstmt.setInt(2, report.getEventID());
+            pstmt.setInt(3, orgID);
+            pstmt.executeUpdate();
+            ResultSet rs=pstmt.getGeneratedKeys();
+            return rs.getInt(1);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return 1;
         }
     }
 
-    */
+    public ObservableList<Event> getAllEvent() {
+        String sql = "SELECT * FROM Event";
+
+        try(Connection conn = connect();
+            PreparedStatement psmt = conn.prepareStatement(sql);){
+            //psmt.setString(1, userName);
+            ResultSet rs = psmt.executeQuery();
+
+            return eventtResultSetToObservable(rs);
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 }
+

@@ -4,9 +4,9 @@ import java.util.Date;
 
 public class Notification
 {
-    public int NotificationID;
-    public String title;
-    public String PublishTime;
+    private int NotificationID;
+    private String title;
+    private String PublishTime;
 
 
     public Notification(int notificationID, String title, String publishTime) {

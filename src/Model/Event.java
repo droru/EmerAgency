@@ -5,22 +5,22 @@ import sample.Main;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.sql.Date;
-import java.util.List;
 
 public class Event{
 
-    private List<Update>updates;
-    private List<Category> categories;
-    private List<Organization>organizations;
+    private Map<Integer,Update>updates;
+    private Map<Integer,Category> categories;
+    private Map<Integer,Organization>organizations;
+
     private int eventID;
     private int publisher;
     private String title;
     private Date publishDateTime;
     private String status;
 
-    public Event(int eventID, int publish, String title, Date publish_time, String status,List<Update>updates,List<Category> categories,List<Organization>organizations) {
+    public Event(int eventID, int publish, String title, Date publish_time, String status,Map<Integer,Update>updates,Map<Integer,Category> categories,Map<Integer,Organization>organizations) {
         this.eventID = eventID;
         this.publisher = publish;
         this.title = title;
@@ -29,13 +29,13 @@ public class Event{
         setLists(updates,categories,organizations);
     }
 
-    private void setLists(List<Update> updates, List<Category> categories, List<Organization> organizations) {
+    private void setLists(Map<Integer,Update> updates, Map<Integer,Category> categories, Map<Integer,Organization> organizations) {
         if(this.updates==null)
-            this.updates=new ArrayList<>();
+            this.updates=new HashMap<>();
         if(categories == null)
-            this.categories = new ArrayList<>();
+            this.categories = new HashMap<>();
         if(organizations==null)
-            this.organizations=new ArrayList<>();
+            this.organizations=new HashMap<>();
 
         this.updates=updates;
         this.organizations=organizations;
@@ -50,11 +50,11 @@ public class Event{
         this.title=title;
         this.title = title;
         if(this.updates==null)
-            this.updates=new ArrayList<>();
+            this.updates=new HashMap<>();
         if(categories == null)
-            categories = new ArrayList<>();
+            categories = new HashMap<>();
         if(organizations==null)
-            organizations=new ArrayList<>();
+            organizations=new HashMap<>();
 
     }
 
@@ -109,25 +109,30 @@ public class Event{
                 '}';
     }
 
+    public String printString() {
+        return "סוג האיורע " +title + "    "  + "מפרסם האירוע :" +publisher+"\n"+
+                "תאריך האירוע : " +publishDateTime.toString() +"    " +"סטאטוס האירוע: " +status+"\n";
+    }
+
     public Update createUpdate(User user, String desc) {
         Update update=new Update(user.getUserId(),this.eventID,desc);
-        this.updates.add(update);
+        this.updates.put(update.getUpdateID(),update);
         return update;
     }
 
     public void addCategory(Category c) {
-        categories.add(c);
+        categories.put(c.getId(),c);
     }
 
     public void addOrganization(Organization o) {
-        organizations.add(o);
+            organizations.put(o.getId(),o);
     }
 
     public Pair<Notification,List<User>> sendNotifications(String Title) {
         List<User>users=null;
         Notification n=null;
-        for(Organization o:organizations){
-           users=o.getUsers();
+        for(Organization o:organizations.values()){
+           users=(List)o.getUsers().values();
              n=new Notification(title);
             for(User u:users){
                u.sendNotification(n);
@@ -139,8 +144,8 @@ public class Event{
 
     public List<Permission> setPremissions() {
        List<Permission>res=new ArrayList<>();
-        for (Organization o:organizations) {
-            List<User> users =o.getUsers();
+        for (Organization o:organizations.values()) {
+            List<User> users =(List)o.getUsers().values();
             users.add(Main.loggedUser);
             for (User u: users){
                 Permission permission =new Permission(u.getUserId(),this.eventID,"R",0);
@@ -150,5 +155,35 @@ public class Event{
         }
         return res;
     }
-}
+
+    public Map<Integer, Update> getUpdates() {
+        return updates;
+    }
+
+    public void setUpdates(Map<Integer, Update> updates) {
+        this.updates = updates;
+    }
+
+    public Map<Integer, Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Map<Integer, Category> categories) {
+        this.categories = categories;
+    }
+
+    public Map<Integer, Organization> getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(Map<Integer, Organization> organizations) {
+        this.organizations = organizations;
+    }
+
+    public Report createReport() {
+        return (new Report(this.eventID+123,this.eventID,this,organizations));
+    }
+
+    }
+
 

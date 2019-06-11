@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 import sample.Aview;
+import sample.Controller;
 import sample.Main;
 
 import java.io.IOException;
@@ -35,6 +36,8 @@ public class MainScreenController extends Aview
         getController().getEvents();
         getController().getCategories();
         getController().getOrganizations();
+        //getController().getReports();
+
 
         OrganizationName = getController().getOrganizationName(Main.loggedUser.getOrganizationId());
         Title.setText(OrganizationName + " Events");
@@ -64,6 +67,11 @@ public class MainScreenController extends Aview
 
         if (EventTable.getColumns().size() == 0) {
             ObservableList<Event> events = getController().getEventsByUserId(Main.loggedUser.getUserId());
+            setTableData(events);
+        }
+        if(Main.loggedUser.getUserId()==1)
+        {
+            ObservableList<Event> events = getController().getAllEvent();
             setTableData(events);
         }
     }
@@ -143,29 +151,34 @@ public class MainScreenController extends Aview
             }
         };
 
+
         actionCol3.setCellFactory(new PropertyValueFactory<>("DUMMY"));
         Callback<TableColumn<Event, String>, TableCell<Event, String>> cellFactory2
                 = new Callback<TableColumn<Event, String>, TableCell<Event, String>>() {
             @Override
             public TableCell call(final TableColumn<Event, String> param) {
-                final TableCell<Event, String> cell = new TableCell<Event, String>() {
+                    final TableCell<Event, String> cell = new TableCell<Event, String>() {
                     final Button btn = new Button("יצירת דוח");
 
                     @Override
                     public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
+
+                            super.updateItem(item, empty);
                         if (empty) {
                             setGraphic(null);
                             setText(null);
                         } else {
+                            if(getTableView().getItems().get(getIndex()).getStatus().equals("Active")||Main.loggedUser.getUserId()!=1)
+                                setVisible(false);
                             btn.setOnAction(event -> {
                                 System.out.println("btn pressed");
-                                int eventId=(Integer.parseInt( this.getTableView().getColumns().get(0).getCellData(0).toString()));
+                                int eventId=( this.getTableView().getItems().get(getIndex()).getEventID());
                                 reportController.eventID=eventId;
+                                getController().createReport(eventId);
                                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../View/eventReport.fxml"));
                                 try {
                                     Parent root = (Parent)fxmlLoader.load();
-                                    Main.newStage(root,"דוח אירוע",450,450,Title.getScene().getWindow());
+                                    Main.newStage(root,"דוח אירוע",450,632,Title.getScene().getWindow());
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }

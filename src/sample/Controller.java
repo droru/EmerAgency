@@ -4,12 +4,15 @@ import Model.*;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Controller {
+
+
 
     private Controller() { }
     private static Controller controller;
@@ -26,6 +29,7 @@ public class Controller {
     private Map<Integer,Event> events;
     private Map<Integer,Organization> organizations;
     private Map<Integer, Category> categories;
+    private Map<Integer,Report> reports;
 
     public Event createEvent(int userID,String Title) {
         User u=users.get(userID);
@@ -64,9 +68,7 @@ public class Controller {
             query.insertNotificationToUser(notId,u);
 
     }
-
-    public void setReadPremissions(int eventID)
-    {
+    public void setReadPremissions(int eventID) {
         Event e=events.get(eventID);
         List<Permission> permissions =e.setPremissions();
         for(Permission p: permissions)
@@ -74,10 +76,41 @@ public class Controller {
 
     }
 
+    public Map<Integer,User> getEventUser(int eventID){
+        Map<Integer,User>res=new HashMap<>();
+        for (Organization o: events.get(eventID).getOrganizations().values())
+        {
+            res.putAll(o.getUsers());
+        }
+        return res;
+    }
+
+    public void createReport(int eventID){
+        Event e=events.get(eventID);
+        Report report=e.createReport();
+        for(Organization o:report.getOrganizations().values()) {
+            System.out.println("insert Report");
+             //query.insertReport(report,o.getId());
+        }
+    }
+    public void sendReprot(Report report,Organization id){
+        for(Organization o:report.getOrganizations().values())
+            o.addReport(report);
+    }
+
     public Map<Integer,Event> getEvents() {
-        if (events==null){
+        if (events==null&&Main.loggedUser.getUserId()!=1){
             List<Event> tmpEvents=new ArrayList<>();
             tmpEvents=query.getEventsByUserName(Main.loggedUser.getUserId());
+            events=new HashMap<>();
+            for (Event e:tmpEvents)
+            {
+                events.put(e.getEventID(),e);
+            }
+        }
+        else {
+            List<Event> tmpEvents=new ArrayList<>();
+            tmpEvents=query.getAllEvent();
             events=new HashMap<>();
             for (Event e:tmpEvents)
             {
@@ -124,6 +157,7 @@ public class Controller {
 
 
 
+
     //region User
     public User search_username(String Username){ return query.search_username(Username); }
 
@@ -144,6 +178,10 @@ public class Controller {
     public List<User> getUsersDB() {return query.getallUsers() ;}
 
     public int insertUpdate(Update update) {return query.inserUpdate(update); }
+
+    public ObservableList<Event> getAllEvent() {
+        return query.getAllEvent();
+    }
 
     /*
     public void test(int i, ObservableList selectedItems) throws SQLException {

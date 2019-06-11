@@ -1,12 +1,14 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class User
 {
 
-    List <Notification> notifications;
+    Map<Integer,Notification> notifications;
     List <Permission> permissions;
 
     private int UserId;
@@ -18,7 +20,7 @@ public class User
     private String Status;
 
 
-    public User(int userId, String userName, int organizationId, String password, int rank, String email, String status,List<Notification>notifications,List<Permission> permissions) {
+    public User(int userId, String userName, int organizationId, String password, int rank, String email, String status,Map<Integer,Notification>notifications,List<Permission> permissions) {
         UserId = userId;
         UserName = userName;
         OrganizationId = organizationId;
@@ -26,7 +28,7 @@ public class User
         Rank = rank;
         Email = email;
         Status = status;
-        this.notifications=new ArrayList<>();
+        this.notifications=new HashMap<>();
         this.notifications=notifications;
         this.permissions = permissions;
     }
@@ -88,9 +90,14 @@ public class User
     }
 
     public void sendNotification(Notification n) {
-        notifications.add(n);
+        notifications.put(n.getNotificationID(),n);
     }
     public void addPremission(Permission p){
         permissions.add(p);
+    }
+
+    public String userForReport(Map<Integer,Organization> organizationMap) {
+        return "שם: " + UserName +"  " +"שם הארגון :" +organizationMap.get(OrganizationId).getName()+"\n"+
+                "סטאוס המשתמש :" +Status +"   " +"דירוג המשתמש: "+ Rank;
     }
 }
