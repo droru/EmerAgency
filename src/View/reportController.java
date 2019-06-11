@@ -80,7 +80,6 @@ public class reportController extends Aview {
             job.printPage(textArea);
             job.endJob();
         }
-
         ((Stage) cancelReport.getScene().getWindow()).close();
     }
 }

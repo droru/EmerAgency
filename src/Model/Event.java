@@ -13,6 +13,7 @@ public class Event{
     private Map<Integer,Update>updates;
     private Map<Integer,Category> categories;
     private Map<Integer,Organization>organizations;
+    private Report report;
 
     private int eventID;
     private int publisher;
@@ -181,9 +182,13 @@ public class Event{
     }
 
     public Report createReport() {
-        return (new Report(this.eventID+123,this.eventID,this,organizations));
+        report=new Report(this.eventID+123,this.eventID,this,organizations);
+        return report;
     }
 
+    public Report getReport() {
+        return report;
     }
+}
 
 

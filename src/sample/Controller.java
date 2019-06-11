@@ -66,7 +66,6 @@ public class Controller {
 
     }
     public void setReadPremissions(int eventID) {
-       //list Map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         Event e=events.get(eventID);
         Map<Integer,Permission> permissions =e.setPremissions();
         for(Permission p: permissions.values())
@@ -86,15 +85,12 @@ public class Controller {
     public void createReport(int eventID){
         Event e=events.get(eventID);
         Report report=e.createReport();
-        for(Organization o:report.getOrganizations().values()) {
-            System.out.println("insert Report");
-             //query.insertReport(report,o.getId());
-        }
     }
     public void sendReprot(Report report,Organization id){
         for(Organization o:report.getOrganizations().values())
             o.addReport(report);
     }
+
 
     public Map<Integer,Event> getEvents() {
         if (events==null&&Main.loggedUser.getOrganizationId()!=4){

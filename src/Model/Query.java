@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Query
 {
-    private static Connection connect() throws SQLException {
+    private static Connection connect(){
         //SQLite connection string
         //DriverManager.getConnection("jdbc:sqlite:D:\\db\\Emer-Agency-DB.sqlite");
         try {
@@ -56,7 +56,7 @@ public class Query
     private List<Permission> getPermissionByuserID(int userId) {
         String sql = "SELECT * FROM UserEvent  where UserId="+userId;
         try(Connection conn = connect();
-            PreparedStatement psmt = conn.prepareStatement(sql);){
+            PreparedStatement psmt = conn.prepareStatement(sql)){
             ResultSet rs = psmt.executeQuery();
             List<Permission> permissions = new ArrayList<>();
             while (rs.next()) {
@@ -168,7 +168,7 @@ public class Query
     private Map<Integer, Organization> getOrganizationByReportID(int reportID) {
         String sql = "SELECT * FROM Organization inner join Reports where reportID="+reportID;
         try(Connection conn = connect();
-            PreparedStatement psmt = conn.prepareStatement(sql);){
+            PreparedStatement psmt = conn.prepareStatement(sql)){
             ResultSet rs = psmt.executeQuery();
             Map<Integer,Organization>  orgs=null;
             while (rs.next()) {
@@ -188,7 +188,7 @@ public class Query
     private Map<Integer,Category> getCategoriesByEventID(int eventID) {
         String sql = "SELECT * FROM Category inner join EventCategory where EventID="+eventID;
         try(Connection conn = connect();
-            PreparedStatement psmt = conn.prepareStatement(sql);){
+            PreparedStatement psmt = conn.prepareStatement(sql)){
             ResultSet rs = psmt.executeQuery();
 
             Map<Integer,Category> categories = new HashMap<>();
@@ -207,7 +207,7 @@ public class Query
     private Map<Integer,Update> getUpdatesByEventID(int eventID) {
         String sql = "SELECT * FROM  EventUpdates where EventId="+eventID;
         try(Connection conn = connect();
-            PreparedStatement psmt = conn.prepareStatement(sql);){
+            PreparedStatement psmt = conn.prepareStatement(sql)){
             ResultSet rs = psmt.executeQuery();
 
             Map<Integer,Update> updates = new HashMap<>();
@@ -481,7 +481,7 @@ public class Query
             return 1;
         }
     }
-
+/*
     public int insertReport(Report report,int orgID) {
         String sql = "INSERT INTO Reports(reportID,eventID, organizationID) VAlUES(?,?,?)";
         try(Connection conn = connect();
@@ -499,6 +499,8 @@ public class Query
         }
     }
 
+
+ */
     public ObservableList<Event> getAllEvent() {
         String sql = "SELECT * FROM Event";
 
