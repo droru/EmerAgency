@@ -12,8 +12,6 @@ import java.util.Map;
 
 public class Controller {
 
-
-
     private Controller() { }
     private static Controller controller;
 
@@ -43,7 +41,7 @@ public class Controller {
         createUpdate(eventID,userID,desc);
 
     }
-    private void createUpdate(int eventID, int userID, String desc) {
+    public void createUpdate(int eventID, int userID, String desc) {
         Event event=events.get(eventID);
         User user=users.get(userID);
         Update update=event.createUpdate(user,desc);
@@ -62,16 +60,17 @@ public class Controller {
     }
     public void sendNotification(int eventID,String title){
         Event e=events.get(eventID);
-        Pair<Notification,List<User>> res=e.sendNotifications(title);
+        Pair<Notification,Map<Integer,User>> res=e.sendNotifications(title);
         int notId=query.insertNotification(res.getKey());
-        for(User u: res.getValue())
+        for(User u: res.getValue().values())
             query.insertNotificationToUser(notId,u);
 
     }
     public void setReadPremissions(int eventID) {
+       //list Map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         Event e=events.get(eventID);
-        List<Permission> permissions =e.setPremissions();
-        for(Permission p: permissions)
+        Map<Integer,Permission> permissions =e.setPremissions();
+        for(Permission p: permissions.values())
             query.insertPremission(p);
 
     }
@@ -99,7 +98,7 @@ public class Controller {
     }
 
     public Map<Integer,Event> getEvents() {
-        if (events==null&&Main.loggedUser.getUserId()!=1){
+        if (events==null&&Main.loggedUser.getOrganizationId()!=4){
             List<Event> tmpEvents=new ArrayList<>();
             tmpEvents=query.getEventsByUserName(Main.loggedUser.getUserId());
             events=new HashMap<>();
@@ -157,7 +156,6 @@ public class Controller {
 
 
 
-
     //region User
     public User search_username(String Username){ return query.search_username(Username); }
 
@@ -171,9 +169,7 @@ public class Controller {
 
     //public ObservableList<Notification> getNotificationByUserName() { return query.getNotificationByUserName();}
 
-    public ObservableList<Organization> getAllOrganizations(){return query.getAllOrganizations();}
-
-    //public ArrayList<Notification> getNotificationByEventID(int eventID){return query.getNotificationByEventID(eventID);}
+    public ObservableList<Update> getUpdateByEventID(int eventID){return query.getObserverUpdatesByEventID(eventID);}
 
     public List<User> getUsersDB() {return query.getallUsers() ;}
 

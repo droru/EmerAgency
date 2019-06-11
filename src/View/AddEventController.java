@@ -15,6 +15,7 @@ import sample.Main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class AddEventController extends Aview {
@@ -31,7 +32,9 @@ public class AddEventController extends Aview {
     List<Category> selectedCategories= new ArrayList<>();
     List<Organization> selectedOrganizations= new ArrayList<>();
     public void initialize() {
-        organizations = getController().getAllOrganizations();
+        Map<Integer,Organization> org=getController().getOrganizations();
+        org.remove(4);
+        organizations = FXCollections.observableArrayList(org.values());
         categories = FXCollections.observableArrayList(getController().getCategories().values());
         list_organizations.setItems(organizations);
         list_organizations.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

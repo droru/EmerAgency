@@ -128,29 +128,29 @@ public class Event{
             organizations.put(o.getId(),o);
     }
 
-    public Pair<Notification,List<User>> sendNotifications(String Title) {
-        List<User>users=null;
+    public Pair<Notification,Map<Integer,User>> sendNotifications(String Title) {
+        Map<Integer,User>users=null;
         Notification n=null;
         for(Organization o:organizations.values()){
-           users=(List)o.getUsers().values();
+           users=o.getUsers();
              n=new Notification(title);
-            for(User u:users){
+            for(User u:users.values()){
                u.sendNotification(n);
            }
         }
-        Pair <Notification,List<User>> res=new Pair<>(n,users);
+        Pair <Notification,Map<Integer,User>> res=new Pair<>(n,users);
         return res;
     }
 
-    public List<Permission> setPremissions() {
-       List<Permission>res=new ArrayList<>();
+    public Map<Integer,Permission> setPremissions() {
+       Map<Integer,Permission>res=new HashMap<>();
         for (Organization o:organizations.values()) {
-            List<User> users =(List)o.getUsers().values();
-            users.add(Main.loggedUser);
-            for (User u: users){
+            Map<Integer,User> users =o.getUsers();
+            users.put(Main.loggedUser.getUserId(),Main.loggedUser);
+            for (User u: users.values()){
                 Permission permission =new Permission(u.getUserId(),this.eventID,"R",0);
                 u.addPremission(permission);
-                res.add(permission);
+                res.put(permission.getUserID(),permission);
             }
         }
         return res;

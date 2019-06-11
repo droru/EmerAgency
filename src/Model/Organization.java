@@ -45,6 +45,9 @@ public class Organization {
         reports.put(report.getReportID(),report);
     }
 
-
+    @Override
+    public String toString() {
+        return name;
+    }
 }
 

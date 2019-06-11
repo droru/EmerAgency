@@ -222,6 +222,10 @@ public class Query
         }
         return null;
     }
+    public ObservableList<Update> getObserverUpdatesByEventID(int eventID){
+        Map<Integer,Update> updates = getUpdatesByEventID(eventID);
+        return FXCollections.observableArrayList(updates.values());
+    }
 
     public ObservableList<Category> getAllCategories()
     {

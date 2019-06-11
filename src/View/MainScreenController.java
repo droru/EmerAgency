@@ -27,6 +27,7 @@ public class MainScreenController extends Aview
     public TableView<Event> EventTable;
     public Label Title;
     public ImageView pic;
+    public Button addEventbtn;
 
     private String  OrganizationName;
 
@@ -38,6 +39,9 @@ public class MainScreenController extends Aview
         getController().getOrganizations();
         //getController().getReports();
 
+
+        if(Main.loggedUser.getOrganizationId()!=4)
+            addEventbtn.setVisible(false);
 
         OrganizationName = getController().getOrganizationName(Main.loggedUser.getOrganizationId());
         Title.setText(OrganizationName + " Events");
@@ -65,11 +69,11 @@ public class MainScreenController extends Aview
 
         }
 
-        if (EventTable.getColumns().size() == 0) {
+        if (EventTable.getColumns().size() == 0&&Main.loggedUser.getOrganizationId()!=4) {
             ObservableList<Event> events = getController().getEventsByUserId(Main.loggedUser.getUserId());
             setTableData(events);
         }
-        if(Main.loggedUser.getUserId()==1)
+        else
         {
             ObservableList<Event> events = getController().getAllEvent();
             setTableData(events);
@@ -107,11 +111,11 @@ public class MainScreenController extends Aview
                             if(getTableView().getItems().get(getIndex()).getStatus().equals("Finish"))
                             {
                                 btn.setVisible(false);
-                                System.out.println("yes");
+                                //System.out.println("yes");
                             }
                             btn.setOnAction(event -> {
                                 Main.EventId = getTableView().getItems().get(getIndex()).getEventID();
-                                Main.switchScene("../View/AddNotification.fxml", Main.getStage(), 600, 400);
+                                Main.switchScene("../View/AddUpdate.fxml", Main.getStage(), 600, 400);
                             });
                             setGraphic(btn);
                             setText(null);
@@ -140,7 +144,7 @@ public class MainScreenController extends Aview
                         } else {
                             btn.setOnAction(event -> {
                                 Main.EventId = getTableView().getItems().get(getIndex()).getEventID();
-                                Main.switchScene("../View/WatchNotification.fxml", Main.getStage(), 600, 400);
+                                Main.switchScene("../View/WatchUpdate.fxml", Main.getStage(), 600, 400);
                             });
                             setGraphic(btn);
                             setText(null);
@@ -168,7 +172,7 @@ public class MainScreenController extends Aview
                             setGraphic(null);
                             setText(null);
                         } else {
-                            if(getTableView().getItems().get(getIndex()).getStatus().equals("Active")||Main.loggedUser.getUserId()!=1)
+                            if(getTableView().getItems().get(getIndex()).getStatus().equals("Active")||Main.loggedUser.getOrganizationId()!=4)
                                 setVisible(false);
                             btn.setOnAction(event -> {
                                 System.out.println("btn pressed");
