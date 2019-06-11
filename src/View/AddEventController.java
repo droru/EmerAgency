@@ -161,5 +161,7 @@ public class AddEventController extends Aview {
                 alert.close();
             }
         }
+        else
+            ((Stage) list_organizations.getScene().getWindow()).close();
     }
 }

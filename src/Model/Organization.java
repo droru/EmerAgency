@@ -11,13 +11,12 @@ public class Organization {
     private int id;
     private String name;
 
-    public Organization(int id, String name,Map<Integer,User>users,Map<Integer,Report>reports) {
+    public Organization(int id, String name,Map<Integer,User>users){//},Map<Integer,Report>reports) {
         this.id = id;
         this.name = name;
         this.users=new HashMap<>();
         this.users=users;
         this.reports=new HashMap<>();
-        this.reports=reports;
     }
 
     public void setId(int id) {

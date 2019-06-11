@@ -134,7 +134,7 @@ public class Query
 
             Map<Integer,Organization> organizations = new HashMap<>();
             while (rs.next()) {
-                Organization org = new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), getUserByOrganizationID(rs.getInt("OrganizationID")),getReportbyOrgID(rs.getInt("OrganizationID")));
+                Organization org = new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), getUserByOrganizationID(rs.getInt("OrganizationID")));
                     organizations.put(rs.getInt("OrganizationId"),org);
             }
             return organizations;
@@ -144,7 +144,7 @@ public class Query
         }
         return null;
     }
-
+/*
     private Map<Integer, Report> getReportbyOrgID(int organizationID) {
         String sql = "SELECT * FROM Reports where OrganizationId="+organizationID;
         try(Connection conn = connect();
@@ -165,8 +165,11 @@ public class Query
         return null;
     }
 
+
+ */
+/*
     private Map<Integer, Organization> getOrganizationByReportID(int reportID) {
-        String sql = "SELECT * FROM Organization inner join Reports where reportID="+reportID;
+        String sql = "SELECT * FROM Organization";
         try(Connection conn = connect();
             PreparedStatement psmt = conn.prepareStatement(sql)){
             ResultSet rs = psmt.executeQuery();
@@ -184,6 +187,8 @@ public class Query
         return null;
     }
 
+
+ */
 
     private Map<Integer,Category> getCategoriesByEventID(int eventID) {
         String sql = "SELECT * FROM Category inner join EventCategory where EventID="+eventID;
@@ -274,7 +279,7 @@ public class Query
             List<Organization> orgs = new ArrayList<>();
             while (rs.next()) {
                 Map<Integer,User> users = getUserByOrganizationID(rs.getInt("OrganizationID"));
-                orgs.add(new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), users,getReportbyOrgID(rs.getInt("OrganizationId"))));
+                orgs.add(new Organization(rs.getInt("OrganizationId"), rs.getString("OrganizationName"), users));//getReportbyOrgID(rs.getInt("OrganizationId"))));
             }
             ObservableList<Organization> observablOrgs = FXCollections.observableArrayList(orgs);
             return observablOrgs;
