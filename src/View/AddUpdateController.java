@@ -43,7 +43,7 @@ public class AddUpdateController extends Aview {
                 alert.setContentText("ההוספה בוצעה בהצלחה");
                 alert.showAndWait();
                 alert.close();
-                Main.switchScene("../View/MainScreen.fxml", Main.getStage(), 620, 400);
+                Main.switchScene("../View/MainScreen.fxml", Main.getStage(), Main.mainWidth, Main.mainHeight);
             }
             catch (Exception e){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -59,6 +59,6 @@ public class AddUpdateController extends Aview {
 
     public void Back(ActionEvent actionEvent)
     {
-        Main.switchScene("../View/MainScreen.fxml", Main.getStage(), 620, 400);
+        Main.switchScene("../View/MainScreen.fxml", Main.getStage(), Main.mainWidth, Main.mainHeight);
     }
 }

@@ -15,8 +15,12 @@ public class Main extends Application {
 
 
     public static User loggedUser;
+    public static String  OrganizationName="";
     public static int EventId ;   //for show in addNotification sence
     private static Stage stage;
+    //screen sizes
+    public static final int mainWidth = 710;
+    public static final int mainHeight = 420;
 
     public static Stage getStage() {
         return stage;
