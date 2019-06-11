@@ -28,8 +28,6 @@ public class MainScreenController extends Aview
     public ImageView pic;
     public Button addEventbtn;
 
-    private String  OrganizationName;
-
 
     public void initialize() {
         getController().getUsers();
@@ -42,9 +40,10 @@ public class MainScreenController extends Aview
         if(Main.loggedUser.getOrganizationId()!=4)
             addEventbtn.setVisible(false);
 
-        OrganizationName = getController().getOrganizationName(Main.loggedUser.getOrganizationId());
-        Title.setText(OrganizationName + " Events");
-        switch(OrganizationName) {
+        if(Main.OrganizationName == "")
+            Main.OrganizationName = getController().getOrganizationName(Main.loggedUser.getOrganizationId());
+        Title.setText(Main.OrganizationName + " Events");
+        switch(Main.OrganizationName) {
             case "Police":
             {
                 pic.setImage(new Image(Main.class.getResource("../img/Police.png").toExternalForm() ));
@@ -114,7 +113,7 @@ public class MainScreenController extends Aview
                             }
                             btn.setOnAction(event -> {
                                 Main.EventId = getTableView().getItems().get(getIndex()).getEventID();
-                                Main.switchScene("../View/AddUpdate.fxml", Main.getStage(), 600, 400);
+                                Main.switchScene("../View/AddUpdate.fxml", Main.getStage(), Main.mainWidth, Main.mainHeight);
                             });
                             setGraphic(btn);
                             setText(null);
@@ -143,7 +142,7 @@ public class MainScreenController extends Aview
                         } else {
                             btn.setOnAction(event -> {
                                 Main.EventId = getTableView().getItems().get(getIndex()).getEventID();
-                                Main.switchScene("../View/WatchUpdate.fxml", Main.getStage(), 600, 400);
+                                Main.switchScene("../View/WatchUpdate.fxml", Main.getStage(), Main.mainWidth, Main.mainHeight);
                             });
                             setGraphic(btn);
                             setText(null);
