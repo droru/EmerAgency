@@ -1,6 +1,7 @@
 package View;
 
 import Model.Event;
+import Model.Organization;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -27,14 +28,14 @@ public class MainScreenController extends Aview
     public Label Title;
     public ImageView pic;
     public Button addEventbtn;
-
+    private Organization mokedOrg;
 
     public void initialize() {
         getController().getUsers();
         getController().getEvents();
         getController().getCategories();
         getController().getOrganizations();
-        //getController().getReports();
+         mokedOrg= getController().getOrganizations().get(4);
 
 
         if(Main.loggedUser.getOrganizationId()!=4)
@@ -176,6 +177,7 @@ public class MainScreenController extends Aview
                                 System.out.println("btn pressed");
                                 int eventId=( this.getTableView().getItems().get(getIndex()).getEventID());
                                 reportController.eventID=eventId;
+                                getController().getOrganizations().put(4,mokedOrg);
                                 getController().createReport(eventId);
                                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../View/eventReport.fxml"));
                                 try {
